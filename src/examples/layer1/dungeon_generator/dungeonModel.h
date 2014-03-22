@@ -177,7 +177,7 @@ namespace octet{
      this->values = std::vector<float>(numElements*numElements);
 
      for(int i=0;i!=numElements*numElements;++i){
-       this->values[i] = -1.0f;
+       this->values[i] = 0.0f;
      }
    }
 
@@ -194,7 +194,7 @@ namespace octet{
      float minimun= std::numeric_limits<float>::infinity();
     
      for(int j=0;j!=numElements;++j){
-        if(values[row*numElements+j] != -1.0f && values[row*numElements+j] < minimun){
+        if(values[row*numElements+j] != 0.0f && values[row*numElements+j] < minimun){
           minimun = values[row*numElements+j];
           minimun = j;
         }
@@ -204,11 +204,36 @@ namespace octet{
    
    }
 
-   void setConnectionBetween(vec4 p1, float p2){
-     int posP1 = 
-     int posP2 = 
+   void setConnectionBetween(vec4 p1, vec4 p2){
+     int posP1 = getIndexForRoom(p1);
+     int posP2 = getIndexForRoom(p2);
      
-     setValueAt();
+     float dist = sqrt( (p1.x() - p2.x()) * (p1.x() - p2.x()) + (p1.z() - p2.z()) * (p1.z() - p2.z()) );
+
+     setValueAt(posP1,posP2,dist);
+     setValueAt(posP2,posP1,dist);
+   }
+
+   int getIndexForRoom(vec4 point){
+     for(int i=0; i!=rooms.size();++i){
+       if(cmpf(rooms[i]->getMidPoint().x(),point.x()) && cmpf(rooms[i]->getMidPoint().z(),point.z())){
+         return i;
+       }
+     }
+   }
+
+   bool cmpf(float A, float B, float epsilon = 0.005f)
+   { 
+     return (fabs(A - B) < epsilon);
+   }
+
+   void printGraph(){
+     for(int i=0;i!=numElements;++i){
+       for(int j=0;j!=numElements;++j){
+         cout<<values[i*numElements+j]<<" ";
+       }
+       cout<<endl;
+     }
    }
 
 

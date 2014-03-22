@@ -31,6 +31,8 @@ namespace octet{
 
     Graph roomsGraph;
 
+    Graph minimunSpanningTree;
+
   public:
 
     dungeon_generator(int argc, char **argv) : app(argc, argv){}
@@ -309,15 +311,13 @@ namespace octet{
         XYZ p2 = points[tris[i].p2];
         XYZ p3 = points[tris[i].p3];
 
-        roomsGraph.setConnectionBetween(vec4(p1.x,0.0f,p1.y,0.0,0.0),vec4(p2.x,0.0f,p2.y,0.0,0.0));
-        roomsGraph.setConnectionBetween(vec4(p2.x,0.0f,p2.y,0.0,0.0),vec4(p3.x,0.0f,p3.y,0.0,0.0));
-        roomsGraph.setConnectionBetween(vec4(p3.x,0.0f,p3.y,0.0,0.0),vec4(p1.x,0.0f,p1.y,0.0,0.0));
+        roomsGraph.setConnectionBetween(vec4(p1.x,0.0f,p1.y,0.0),vec4(p2.x,0.0f,p2.y,0.0));
+        roomsGraph.setConnectionBetween(vec4(p2.x,0.0f,p2.y,0.0),vec4(p3.x,0.0f,p3.y,0.0));
+        roomsGraph.setConnectionBetween(vec4(p3.x,0.0f,p3.y,0.0),vec4(p1.x,0.0f,p1.y,0.0));
 
-        cout<<p1.x<<" "<<p1.y<<" "<<endl;
-        cout<<p2.x<<" "<<p2.y<<" "<<endl;
-        cout<<p3.x<<" "<<p3.y<<" "<<endl;
       }
 
+      roomsGraph.printGraph();
     }
 
 
