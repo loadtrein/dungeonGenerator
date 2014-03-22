@@ -1,0 +1,6 @@
+Variables: F
+Constants: +,-,[,]
+Axiom: F
+Rules: (F->TFTF-[^TF+TF+LF]+[&TF-TF-LF])
+Angle: 22.5
+N: 4

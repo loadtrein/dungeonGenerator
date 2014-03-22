@@ -1,0 +1,247 @@
+created mesh Mesh_001
+created mesh Mesh
+created mesh Cone_003-Geometry
+created mesh Cube_008
+created mesh Cube_006
+created mesh Cube_003
+created mesh Sphere-Geometry
+created mesh Cube
+created mesh Cone_001-Geometry
+created mesh Cone-Geometry
+created mesh Cylinder_004-Geometry
+created mesh Cylinder_003-Geometry
+created mesh Cylinder_002-Geometry
+created mesh Cylinder_001-Geometry
+created mesh Cylinder-Geometry
+created mesh Cube_098
+created mesh Cube_097
+created mesh Cube_096
+created mesh Cube_095
+created mesh Cube_094
+created mesh Cube_093
+created mesh Cube_092
+created mesh Cube_091
+created mesh Cube_090
+created mesh Cube_089
+created mesh Cube_088
+created mesh Cube_087
+created mesh Cube_086
+created mesh Cube_085
+created mesh Cube_084
+created mesh Cube_083
+created mesh Cube_082
+created mesh Cube_081
+created mesh Cube_080
+created mesh Cube_079
+created mesh Cube_078
+created mesh Cube_077
+created mesh Cube_076
+created mesh Cube_075
+created mesh Cube_074
+created mesh Cube_073
+created mesh Cube_072
+created mesh Cube_071-Geometry
+created mesh Cube_070-Geometry
+created mesh Cube_069-Geometry
+created mesh Cube_024-Geometry
+created mesh Cube_023-Geometry
+created mesh Cube_022-Geometry
+created mesh Cube_021-Geometry
+created mesh Cube_020-Geometry
+created mesh Cube_019-Geometry
+created mesh Cube_018-Geometry
+created mesh Cube_017-Geometry
+created mesh Cube_016-Geometry
+created mesh Cube_015-Geometry
+created mesh Cube_014-Geometry
+created mesh Cube_013-Geometry
+created mesh Cube_011-Geometry
+created mesh Cube_012-Geometry
+created mesh Cube_010-Geometry
+created mesh Cube_009-Geometry
+created mesh Cube_005-Geometry
+created mesh Cube_004-Geometry
+created mesh Cube_002-Geometry
+created mesh Cube_001-Geometry
+created mesh Cube_068-Geometry
+created mesh Cube_067-Geometry
+created mesh Cube_066-Geometry
+created mesh Cube_064-Geometry
+created mesh Cube_062-Geometry
+created mesh Cube_061-Geometry
+created mesh Cube_060-Geometry
+created mesh Plane-Geometry
+add scene_node id=Font_001 sid=(null)
+add scene_node id=Font sid=(null)
+add scene_node id=Cone_003 sid=(null)
+add scene_node id=Cube_071 sid=(null)
+add scene_node id=Cube_070 sid=(null)
+add scene_node id=Cube_069 sid=(null)
+add scene_node id=Sphere sid=(null)
+add scene_node id=Cube_068 sid=(null)
+add scene_node id=Cone_001 sid=(null)
+add scene_node id=Cone sid=(null)
+add scene_node id=Cylinder_004 sid=(null)
+add scene_node id=Cylinder_003 sid=(null)
+add scene_node id=Cylinder_002 sid=(null)
+add scene_node id=Cylinder_001 sid=(null)
+add scene_node id=Cylinder sid=(null)
+add scene_node id=Cube_067 sid=(null)
+add scene_node id=Cube_066 sid=(null)
+add scene_node id=Cube_065 sid=(null)
+add scene_node id=Cube_064 sid=(null)
+add scene_node id=Cube_063 sid=(null)
+add scene_node id=Cube_062 sid=(null)
+add scene_node id=Cube_061 sid=(null)
+add scene_node id=Cube_031 sid=(null)
+add scene_node id=Cube_030 sid=(null)
+add scene_node id=Cube_029 sid=(null)
+add scene_node id=Cube_028 sid=(null)
+add scene_node id=Cube_027 sid=(null)
+add scene_node id=Cube_026 sid=(null)
+add scene_node id=Cube_025 sid=(null)
+add scene_node id=Cube_024 sid=(null)
+add scene_node id=Cube_023 sid=(null)
+add scene_node id=Cube_022 sid=(null)
+add scene_node id=Cube_021 sid=(null)
+add scene_node id=Cube_020 sid=(null)
+add scene_node id=Cube_019 sid=(null)
+add scene_node id=Cube_018 sid=(null)
+add scene_node id=Cube_017 sid=(null)
+add scene_node id=Cube_016 sid=(null)
+add scene_node id=Cube_015 sid=(null)
+add scene_node id=Cube_014 sid=(null)
+add scene_node id=Cube_013 sid=(null)
+add scene_node id=Cube_012 sid=(null)
+add scene_node id=Cube_011 sid=(null)
+add scene_node id=Cube_010 sid=(null)
+add scene_node id=Cube_009 sid=(null)
+add scene_node id=Cube_008-Node sid=(null)
+add scene_node id=Cube_007 sid=(null)
+add scene_node id=Cube_006-Node sid=(null)
+add scene_node id=Cube_005 sid=(null)
+add scene_node id=Cube_004 sid=(null)
+add scene_node id=Cube_003-Node sid=(null)
+add scene_node id=Cube_002 sid=(null)
+add scene_node id=Cube_001 sid=(null)
+add scene_node id=Cube-Node sid=(null)
+add scene_node id=Cube_060 sid=(null)
+add scene_node id=Cube_059 sid=(null)
+add scene_node id=Cube_058 sid=(null)
+add scene_node id=Cube_057 sid=(null)
+add scene_node id=Cube_055 sid=(null)
+add scene_node id=Cube_054 sid=(null)
+add scene_node id=Cube_053 sid=(null)
+add scene_node id=Cube_051 sid=(null)
+add scene_node id=Cube_050 sid=(null)
+add scene_node id=Cube_049 sid=(null)
+add scene_node id=Cube_048 sid=(null)
+add scene_node id=Cube_047 sid=(null)
+add scene_node id=Cube_046 sid=(null)
+add scene_node id=Cube_045 sid=(null)
+add scene_node id=Cube_043 sid=(null)
+add scene_node id=Cube_041 sid=(null)
+add scene_node id=Cube_040 sid=(null)
+add scene_node id=Cube_039 sid=(null)
+add scene_node id=Plane sid=(null)
+add scene_node id=Lamp sid=(null)
+add scene_node id=Camera sid=(null)
+add mesh instance Cone_003-Geometry+bullet_logo_JPG
+add mesh instance Cube_008+bullet_logo_JPG-Material
+add mesh instance Cube_006+bullet_logo_JPG-Material001
+add mesh instance Cube_003+bullet_logo_JPG-Material001
+add mesh instance Sphere-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cone_001-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cone-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cylinder_004-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cylinder_003-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cylinder_002-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cylinder_001-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cylinder-Geometry+bullet_logo_JPG-Material001
+add mesh instance Cube_098+Material
+add mesh instance Cube_097+Material
+add mesh instance Cube_096+Material
+add mesh instance Cube_095+Material
+add mesh instance Cube_094+Material
+add mesh instance Cube_093+Material
+add mesh instance Cube_092+Material
+add mesh instance Cube_091+Material
+add mesh instance Cube_090+Material
+add mesh instance Cube_089+Material
+add mesh instance Cube_088+Material
+add mesh instance Cube_087+Material
+add mesh instance Cube_086+Material
+add mesh instance Cube_085+Material
+add mesh instance Cube_084+Material
+add mesh instance Cube_083+Material
+add mesh instance Cube_082+Material
+add mesh instance Cube_081+Material
+add mesh instance Cube_080+Material
+add mesh instance Cube_079+Material
+add mesh instance Cube_078+Material
+add mesh instance Cube_077+Material
+add mesh instance Cube_076+Material
+add mesh instance Cube_075+Material
+add mesh instance Cube_074+Material
+add mesh instance Cube_073+Material
+add mesh instance Cube_072+Material
+add mesh instance Cube_071-Geometry+Material
+add mesh instance Cube_070-Geometry+Material
+add mesh instance Cube_069-Geometry+Material
+add mesh instance Cube_024-Geometry+Material
+add mesh instance Cube_023-Geometry+Material
+add mesh instance Cube_022-Geometry+Material
+add mesh instance Cube_021-Geometry+Material
+add mesh instance Cube_020-Geometry+Material
+add mesh instance Cube_019-Geometry+Material
+add mesh instance Cube_018-Geometry+Material
+add mesh instance Cube_017-Geometry+Material
+add mesh instance Cube_016-Geometry+Material
+add mesh instance Cube_015-Geometry+Material
+add mesh instance Cube_014-Geometry+Material
+add mesh instance Cube_013-Geometry+Material
+add mesh instance Cube_011-Geometry+Material
+add mesh instance Cube_012-Geometry+Material
+add mesh instance Cube_010-Geometry+Material
+add mesh instance Cube_005-Geometry+Material
+add mesh instance Cube_004-Geometry+Material
+add mesh instance Cube_002-Geometry+Material
+add mesh instance Cube_001-Geometry+Material
+add mesh instance Cube_068-Geometry+Material
+add mesh instance Cube_067-Geometry+Material
+add mesh instance Cube_066-Geometry+Material
+add mesh instance Cube_064-Geometry+Material
+add mesh instance Cube_062-Geometry+Material
+add mesh instance Cube_061-Geometry+Material
+add mesh instance Cube_060-Geometry+Material
+add mesh instance Plane-Geometry+Material
+    0 i=    0 m=[  -63.000,   247.000,     0.000] w=[  -63.000,   247.000,     0.000] p=[   -0.125,     0.677,     0.000]
+    1 i=    1 m=[  -56.000,   247.000,     0.000] w=[  -56.000,   247.000,     0.000] p=[   -0.111,     0.677,     0.000]
+    2 i=    2 m=[  -63.000,   239.000,     0.000] w=[  -63.000,   239.000,     0.000] p=[   -0.125,     0.655,     0.000]
+    3 i=    2 m=[  -63.000,   239.000,     0.000] w=[  -63.000,   239.000,     0.000] p=[   -0.125,     0.655,     0.000]
+    4 i=    1 m=[  -56.000,   247.000,     0.000] w=[  -56.000,   247.000,     0.000] p=[   -0.111,     0.677,     0.000]
+    5 i=    3 m=[  -56.000,   239.000,     0.000] w=[  -56.000,   239.000,     0.000] p=[   -0.111,     0.655,     0.000]
+    6 i=    4 m=[  -55.000,   245.000,     0.000] w=[  -55.000,   245.000,     0.000] p=[   -0.109,     0.671,     0.000]
+    7 i=    5 m=[  -49.000,   245.000,     0.000] w=[  -49.000,   245.000,     0.000] p=[   -0.097,     0.671,     0.000]
+    8 i=    6 m=[  -55.000,   239.000,     0.000] w=[  -55.000,   239.000,     0.000] p=[   -0.109,     0.655,     0.000]
+    9 i=    6 m=[  -55.000,   239.000,     0.000] w=[  -55.000,   239.000,     0.000] p=[   -0.109,     0.655,     0.000]
+   10 i=    5 m=[  -49.000,   245.000,     0.000] w=[  -49.000,   245.000,     0.000] p=[   -0.097,     0.671,     0.000]
+   11 i=    7 m=[  -49.000,   239.000,     0.000] w=[  -49.000,   239.000,     0.000] p=[   -0.097,     0.655,     0.000]
+   12 i=    8 m=[  -47.000,   248.000,     0.000] w=[  -47.000,   248.000,     0.000] p=[   -0.093,     0.679,     0.000]
+   13 i=    9 m=[  -40.000,   248.000,     0.000] w=[  -40.000,   248.000,     0.000] p=[   -0.079,     0.679,     0.000]
+   14 i=   10 m=[  -47.000,   239.000,     0.000] w=[  -47.000,   239.000,     0.000] p=[   -0.093,     0.655,     0.000]
+   15 i=   10 m=[  -47.000,   239.000,     0.000] w=[  -47.000,   239.000,     0.000] p=[   -0.093,     0.655,     0.000]
+   16 i=    9 m=[  -40.000,   248.000,     0.000] w=[  -40.000,   248.000,     0.000] p=[   -0.079,     0.679,     0.000]
+   17 i=   11 m=[  -40.000,   239.000,     0.000] w=[  -40.000,   239.000,     0.000] p=[   -0.079,     0.655,     0.000]
+   18 i=   12 m=[  -39.000,   248.000,     0.000] w=[  -39.000,   248.000,     0.000] p=[   -0.077,     0.679,     0.000]
+   19 i=   13 m=[  -32.000,   248.000,     0.000] w=[  -32.000,   248.000,     0.000] p=[   -0.063,     0.679,     0.000]
+   20 i=   14 m=[  -39.000,   239.000,     0.000] w=[  -39.000,   239.000,     0.000] p=[   -0.077,     0.655,     0.000]
+   21 i=   14 m=[  -39.000,   239.000,     0.000] w=[  -39.000,   239.000,     0.000] p=[   -0.077,     0.655,     0.000]
+   22 i=   13 m=[  -32.000,   248.000,     0.000] w=[  -32.000,   248.000,     0.000] p=[   -0.063,     0.679,     0.000]
+   23 i=   15 m=[  -32.000,   239.000,     0.000] w=[  -32.000,   239.000,     0.000] p=[   -0.063,     0.655,     0.000]
+   24 i=   16 m=[  -31.000,   245.000,     0.000] w=[  -31.000,   245.000,     0.000] p=[   -0.062,     0.671,     0.000]
+   25 i=   17 m=[  -25.000,   245.000,     0.000] w=[  -25.000,   245.000,     0.000] p=[   -0.050,     0.671,     0.000]
+   26 i=   18 m=[  -31.000,   239.000,     0.000] w=[  -31.000,   239.000,     0.000] p=[   -0.062,     0.655,     0.000]
+   27 i=   18 m=[  -31.000,   239.000,     0.000] w=[  -31.000,   239.000,     0.000] p=[   -0.062,     0.655,     0.000]
+   28 i=   17 m=[  -25.000,   245.000,     0.000] w=[  -25.000,   245.000,     0.000] p=[   -0.050,     0.671,     0.000]
+   29 i=   19 m=[  -25.000,   239.000,     0.000] w=[  -25.000,   239.000,     0.000] p=[   -0.050,     0.655,     0.000]

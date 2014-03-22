@@ -1,0 +1,6 @@
+Variables: F
+Constants: +,-,[,]
+Axiom: FX
+Rules: (F->TFTF-[-TF+LF]+[+TF-LF]) (X->TFTF+[+LF]+[-LF])
+Angle: 19
+N: 5
