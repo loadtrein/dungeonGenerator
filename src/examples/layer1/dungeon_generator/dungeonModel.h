@@ -182,7 +182,7 @@ namespace octet{
   public:
     bool operator()(PriorityQueueNode& pqn1, PriorityQueueNode& pqn2)
     {
-      if (pqn1.getDistance() < pqn1.getDistance()){
+      if (pqn2.getDistance() < pqn1.getDistance()){
         return true;
       }else{
         return false;
@@ -240,6 +240,14 @@ namespace octet{
 
    float getValueAt(int i, int j){
      return this->values[i*numElements+j];
+   }
+
+   float getValueAt(Room* r1, Room* r2){
+     int i = getIndexForRoom(r1);
+     int j = getIndexForRoom(r2);
+
+     return (this->values[i*numElements+j] != 0.0f)? this->values[i*numElements+j] : std::numeric_limits<float>::max();
+
    }
 
    void setValueAt(int i, int j, float v){

@@ -36,6 +36,8 @@ namespace octet{
 
     Graph minimunSpanningTree;
 
+    bool showDelaunayTriangulation;
+
   public:
 
     dungeon_generator(int argc, char **argv) : app(argc, argv){}
@@ -61,6 +63,8 @@ namespace octet{
       textures[5] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/redWall.gif");
 
       srand (static_cast <unsigned> (time(0)));
+
+      showDelaunayTriangulation = false;
 
       triangulator.init(ROOMS);
 
@@ -88,6 +92,8 @@ namespace octet{
       selectRoomsAndCreateCompleteGraph();
 
       createMinimumSpanningTree();
+
+
 
     }
 
@@ -330,51 +336,66 @@ namespace octet{
 
       }
 
-      roomsGraph.printGraph();
+      //roomsGraph.printGraph();
     }
 
     void createMinimumSpanningTree(){
 
+      //We add the first room
       std::vector<Room*> addedNodes; 
-      
-
       addedNodes.push_back(minimumTreeRooms[0]);
 
-      for(int i=0; i!=minimumTreeRooms.size();++i){
+      //We add all the rooms except for the first
+      std::vector<Room*> remainingNodes;
+      for(int i=1;i!=minimumTreeRooms.size();++i){
+        remainingNodes.push_back(minimumTreeRooms[i]);
+      }
 
-        //We create it everytime inside the loop because 
+      while(remainingNodes.size() != 0){
+
+        //We create it everytime inside the loop because there's no function to clear the priority queue
         std::priority_queue <PriorityQueueNode, vector<PriorityQueueNode>, ComparePQNode> minimunEdges;
           
-        //We fill the priority queue with the tree nodes closest nodes
+
+        //We fill the priority queue with the closest nodes of the existing tree nodes
         for(int j=0; j!=addedNodes.size();++j){
-              float distance=0;
+          for(int k=0; k!=remainingNodes.size();++k){
+              
+              float distance=roomsGraph.getValueAt(addedNodes[j],remainingNodes[k]);
+              minimunEdges.push(PriorityQueueNode(addedNodes[j],remainingNodes[k],distance));
 
-               Room* r = 0;
-
-              do{
-                
-                r = roomsGraph.getClosestNode(addedNodes[j],distance);
-
-              }while(std::find(addedNodes.begin(), addedNodes.end(), r) != addedNodes.end());
-
-              minimunEdges.push(PriorityQueueNode(addedNodes[j],r,distance));
+          }
         }
 
-          //We store in addedNodes the new minimun spanning tree node
+        //We get the closest node to the existing tree
         PriorityQueueNode pqn = minimunEdges.top();
         Room *rOrigin =  pqn.getRoomOrigin();
         Room *rDestination =  pqn.getRoomDestination();
 
-        //We add the room to our minimum spanning tree
+        //We add the room to our minimum spanning tree and delete it from the remaining nodes
         addedNodes.push_back(rDestination);
+        remainingNodes.erase(remainingNodes.begin() + getIndexToBeRemoved(rDestination,remainingNodes));
 
         //We set the connection between the rooms in the graph
         minimunSpanningTree.setValueAt(rOrigin,rDestination,1.0);
 
       }
 
-      minimunSpanningTree.printGraph();
+      //minimunSpanningTree.printGraph();
       
+    }
+
+    int getIndexToBeRemoved(Room* r, std::vector<Room*> nodes){
+      int index = 0;
+
+      for(int i=0;i!=nodes.size();++i){
+        if(r->getMidPoint().x() == nodes[i]->getMidPoint().x() && 
+          r->getMidPoint().z() == nodes[i]->getMidPoint().z() ){
+            index = i;
+        }
+      }
+
+      return index;
     }
 
     void printRooms(){
@@ -441,8 +462,12 @@ namespace octet{
         cameraToWorld.translate(0.0f,0.0f,5.0f);
       }
 
-      if(is_key_down('R')){
-       printRooms();
+      if(is_key_down('T')){
+       if(showDelaunayTriangulation){
+         showDelaunayTriangulation = false;
+       }else{
+         showDelaunayTriangulation = true;
+       }
       }
     }
 
@@ -495,19 +520,31 @@ namespace octet{
 
       renderCoordinatesOrigin(modelToProjection);
 
+      if(showDelaunayTriangulation){
 
-      int numTris = triangulator.getNumTriangles();
-      ITRIANGLE *tris = triangulator.getTriangles();
-      XYZ *points = triangulator.getPoints();
+        int numTris = triangulator.getNumTriangles();
+        ITRIANGLE *tris = triangulator.getTriangles();
+        XYZ *points = triangulator.getPoints();
 
-      for (int i=0; i<numTris; i++)
-      {
+        for (int i=0; i<numTris; i++)
+        {
 
-        XYZ p1 = points[tris[i].p1];
-	      XYZ p2 = points[tris[i].p2];
-        XYZ p3 = points[tris[i].p3];
+          XYZ p1 = points[tris[i].p1];
+	        XYZ p2 = points[tris[i].p2];
+          XYZ p3 = points[tris[i].p3];
 
-        renderTriangulatedRooms(modelToProjection,p1,p2,p3);
+          renderDelaunayTriangulation(modelToProjection,p1,p2,p3);
+        }
+      }
+
+      for(int i=0; i!=minimumTreeRooms.size();++i){
+        for(int j=0; j!=minimumTreeRooms.size();++j){
+          if(i!=j){
+            if(minimunSpanningTree.getValueAt(i,j) == 1.0f){
+              renderMinimunSpanningTree(modelToProjection, minimumTreeRooms[i]->getMidPoint(),minimumTreeRooms[j]->getMidPoint());
+            }
+          }
+        }
       }
       
       
@@ -548,7 +585,7 @@ namespace octet{
 
     }
 
-    void renderTriangulatedRooms(mat4t modelToProjection, XYZ p1, XYZ p2, XYZ p3){
+    void renderDelaunayTriangulation(mat4t modelToProjection, XYZ p1, XYZ p2, XYZ p3){
 
       color_shader_.render(modelToProjection,vec4(0.0f,1.0f,0.0f,1.0f));
 
@@ -562,6 +599,22 @@ namespace octet{
       glEnableVertexAttribArray(attribute_pos);
 
       glDrawArrays(GL_LINE_LOOP, 0, 3);
+
+    }
+
+    void renderMinimunSpanningTree(mat4t modelToProjection, vec4 p1, vec4 p2){
+
+      color_shader_.render(modelToProjection,vec4(0.0f,1.0f,0.0f,1.0f));
+
+      float vertices[] = {
+        p1.x(), 0, p1.z(),
+        p2.x(), 0, p2.z(),
+      };
+
+      glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)vertices );
+      glEnableVertexAttribArray(attribute_pos);
+
+      glDrawArrays(GL_LINES, 0, 2);
 
     }
 
