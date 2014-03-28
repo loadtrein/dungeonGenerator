@@ -91,9 +91,15 @@ namespace octet{
 
       selectRoomsAndCreateCompleteGraph();
 
+      roomsGraph.printGraph();
+
       createMinimumSpanningTree();
 
+      minimunSpanningTree.printGraph();
 
+      generateRandomEdges();
+
+      minimunSpanningTree.printGraph();
 
     }
 
@@ -398,6 +404,29 @@ namespace octet{
       return index;
     }
 
+    void generateRandomEdges(){
+
+      //Euler formula to get the edges
+      int numberOfEdges = triangulator.getNumTriangles() + minimumTreeRooms.size() - 1;
+
+      int numAdditionalEdges = (numberOfEdges * 15) / 100;
+
+      while(numAdditionalEdges != 0){
+      
+        int row = rand() / (RAND_MAX/minimumTreeRooms.size());
+        int column = rand() / (RAND_MAX/minimumTreeRooms.size());
+
+        cout<<"Random row: "<<row<<" Random column: "<<column<<endl;
+
+        //If the edge belongs to the delaunay triangulation and it is not already on the minimun spanning tree
+        if(roomsGraph.getValueAt(row,column) != 0.0f && minimunSpanningTree.getValueAt(row,column) != 1.0f){
+          minimunSpanningTree.setValueAt(row,column,1.0f);
+          numAdditionalEdges--;
+        }
+      }
+
+    }
+
     void printRooms(){
       for(int i=0;i!=rooms.size();++i){
 
@@ -468,6 +497,10 @@ namespace octet{
        }else{
          showDelaunayTriangulation = true;
        }
+      }
+
+      if(is_key_down('R')){
+        
       }
     }
 
