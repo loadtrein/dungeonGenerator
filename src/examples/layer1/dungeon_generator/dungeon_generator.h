@@ -1,4 +1,5 @@
 #include <random>
+#include <queue>
 #include "ofxDelaunay.h"
 
 using namespace std;
@@ -24,6 +25,8 @@ namespace octet{
     
 
     std::vector<Room> rooms;
+
+    std::vector<Room*> minimumTreeRooms;
 
     GLuint textures[6];
 
@@ -82,7 +85,9 @@ namespace octet{
 
       //printRooms();
 
-      selectRoomsAndCreateGraph();
+      selectRoomsAndCreateCompleteGraph();
+
+      createMinimumSpanningTree();
 
     }
 
@@ -282,15 +287,22 @@ namespace octet{
       return false;
     }
 
-    void selectRoomsAndCreateGraph(){
+    void selectRoomsAndCreateCompleteGraph(){
       
       int numRooms=0;
 
       for(int i=0;i!=rooms.size();++i){
+
         if(rooms[i].getArea() >30 ){
+
           rooms[i].setTexture(5);
+
           triangulator.addPoint(rooms[i].getMidPoint().x(), rooms[i].getMidPoint().z());
+
           roomsGraph.addRoom(&rooms[i]);
+          minimunSpanningTree.addRoom(&rooms[i]);
+          minimumTreeRooms.push_back(&rooms[i]);
+
           cout<<"Add point: "<<rooms[i].getMidPoint().x()<<" "<<rooms[i].getMidPoint().z()<<" "<<endl;
           numRooms++;
         }
@@ -299,6 +311,7 @@ namespace octet{
       triangulator.triangulate();
 
       roomsGraph.initialiseGraph(numRooms);
+      minimunSpanningTree.initialiseGraph(numRooms);
 
       int numTris = triangulator.getNumTriangles();
       ITRIANGLE *tris = triangulator.getTriangles();
@@ -320,6 +333,49 @@ namespace octet{
       roomsGraph.printGraph();
     }
 
+    void createMinimumSpanningTree(){
+
+      std::vector<Room*> addedNodes; 
+      
+
+      addedNodes.push_back(minimumTreeRooms[0]);
+
+      for(int i=0; i!=minimumTreeRooms.size();++i){
+
+        //We create it everytime inside the loop because 
+        std::priority_queue <PriorityQueueNode, vector<PriorityQueueNode>, ComparePQNode> minimunEdges;
+          
+        //We fill the priority queue with the tree nodes closest nodes
+        for(int j=0; j!=addedNodes.size();++j){
+              float distance=0;
+
+               Room* r = 0;
+
+              do{
+                
+                r = roomsGraph.getClosestNode(addedNodes[j],distance);
+
+              }while(std::find(addedNodes.begin(), addedNodes.end(), r) != addedNodes.end());
+
+              minimunEdges.push(PriorityQueueNode(addedNodes[j],r,distance));
+        }
+
+          //We store in addedNodes the new minimun spanning tree node
+        PriorityQueueNode pqn = minimunEdges.top();
+        Room *rOrigin =  pqn.getRoomOrigin();
+        Room *rDestination =  pqn.getRoomDestination();
+
+        //We add the room to our minimum spanning tree
+        addedNodes.push_back(rDestination);
+
+        //We set the connection between the rooms in the graph
+        minimunSpanningTree.setValueAt(rOrigin,rDestination,1.0);
+
+      }
+
+      minimunSpanningTree.printGraph();
+      
+    }
 
     void printRooms(){
       for(int i=0;i!=rooms.size();++i){

@@ -155,12 +155,69 @@ namespace octet{
 
   };
 
+  class PriorityQueueNode{
+    Room * roomOrigin;
+    Room * roomDestination;
+    float distance;
+
+  public:
+
+    PriorityQueueNode(Room* r1, Room* r2, float d):roomOrigin(r1),roomDestination(r2),distance(d){}
+
+    float getDistance(){
+      return this->distance;
+    }
+
+    Room* getRoomOrigin(){
+      return this->roomOrigin;
+    }
+
+    Room* getRoomDestination(){
+      return this->roomDestination;
+    }
+  };
+
+
+  class ComparePQNode {
+  public:
+    bool operator()(PriorityQueueNode& pqn1, PriorityQueueNode& pqn2)
+    {
+      if (pqn1.getDistance() < pqn1.getDistance()){
+        return true;
+      }else{
+        return false;
+      }
+    }
+  };
 
   class Graph{
 
     int numElements;
     std::vector<float> values;
     std::vector<Room*> rooms;
+
+
+    int getIndexForRoom(vec4 point){
+      for(int i=0; i!=rooms.size();++i){
+        if(cmpf(rooms[i]->getMidPoint().x(),point.x()) && cmpf(rooms[i]->getMidPoint().z(),point.z())){
+          return i;
+        }
+      }
+    }
+
+    int getIndexForRoom(Room* r){
+      for(int i=0; i!=rooms.size();++i){
+        if(cmpf(rooms[i]->getMidPoint().x(),r->getMidPoint().x()) && cmpf(rooms[i]->getMidPoint().z(),r->getMidPoint().z())){
+          return i;
+        }
+      }
+    }
+
+    bool cmpf(float A, float B, float epsilon = 0.005f)
+    { 
+      return (fabs(A - B) < epsilon);
+    }
+
 
   public:
    Graph(){
@@ -189,18 +246,33 @@ namespace octet{
      this->values[i*numElements+j]= v;
    }
 
-   int getMinimunAt(int row){
+   void setValueAt(Room* rOrigin, Room* rDestination, float v){
+     
+     int row = getIndexForRoom(rOrigin);
+     int column = getIndexForRoom(rDestination);
+
+     this->values[row*numElements+column]= v;
+   }
+
+   Room* getClosestNode(Room* r, float &distance){
 
      float minimun= std::numeric_limits<float>::infinity();
+     int node = 0;
+
+     int row = getIndexForRoom(r);
     
      for(int j=0;j!=numElements;++j){
         if(values[row*numElements+j] != 0.0f && values[row*numElements+j] < minimun){
           minimun = values[row*numElements+j];
-          minimun = j;
+          node = j;
         }
      }
 
-     return static_cast<int>(minimun);
+     distance = values[row*numElements+node];
+     //This is made to always get the Closest Node in the next call (disadvante we destroy some of the values of the original graph)
+     values[row*numElements+node] = 0.0;
+
+     return rooms[node];
    
    }
 
@@ -214,18 +286,6 @@ namespace octet{
      setValueAt(posP2,posP1,dist);
    }
 
-   int getIndexForRoom(vec4 point){
-     for(int i=0; i!=rooms.size();++i){
-       if(cmpf(rooms[i]->getMidPoint().x(),point.x()) && cmpf(rooms[i]->getMidPoint().z(),point.z())){
-         return i;
-       }
-     }
-   }
-
-   bool cmpf(float A, float B, float epsilon = 0.005f)
-   { 
-     return (fabs(A - B) < epsilon);
-   }
 
    void printGraph(){
      for(int i=0;i!=numElements;++i){
