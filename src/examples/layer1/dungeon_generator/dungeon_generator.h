@@ -38,6 +38,8 @@ namespace octet{
 
     bool showDelaunayTriangulation;
 
+    std::vector<vec4> corridorPoints;
+
   public:
 
     dungeon_generator(int argc, char **argv) : app(argc, argv){}
@@ -48,7 +50,7 @@ namespace octet{
       cameraToWorld.loadIdentity();
 
       cameraToWorld.rotateX(90.0);
-      cameraToWorld.translate(0.0,0.0,10.0);
+      
 
       srand (static_cast <unsigned> (time(0)));
       
@@ -91,15 +93,19 @@ namespace octet{
 
       selectRoomsAndCreateCompleteGraph();
 
-      roomsGraph.printGraph();
+      //roomsGraph.printGraph();
 
       createMinimumSpanningTree();
 
-      minimunSpanningTree.printGraph();
+      //minimunSpanningTree.printGraph();
 
       generateRandomEdges();
 
       minimunSpanningTree.printGraph();
+
+      generateLShapesForCorridors();
+
+      createCorridors();
 
     }
 
@@ -265,6 +271,13 @@ namespace octet{
 
         }
       }
+      
+      if(maxX > maxZ){
+        cameraToWorld.translate(0.0,0.0,maxX);
+      }else{
+        cameraToWorld.translate(0.0,0.0,maxZ);
+      }
+
 
       fillWithSmallTiles(minX,maxX,minZ,maxZ);
 
@@ -427,6 +440,68 @@ namespace octet{
 
     }
 
+    void generateLShapesForCorridors(){
+
+      for(int i=0; i!=minimumTreeRooms.size();++i){
+        for(int j=0; j!=minimumTreeRooms.size();++j){
+
+          //If two rooms are connected
+          if(minimunSpanningTree.getValueAt(i,j) == 1.0f){
+            
+            vec4 vectorBetweenRooms = minimumTreeRooms[i]->getMidPoint() - minimumTreeRooms[j]->getMidPoint();
+
+            int randomGeneration = rand() / (RAND_MAX/2);
+
+            vec4 point1(minimumTreeRooms[i]->getMidPoint().x(),0.0f,minimumTreeRooms[j]->getMidPoint().z(),0.0f);
+            vec4 point2(minimumTreeRooms[j]->getMidPoint().x(),0.0f,minimumTreeRooms[i]->getMidPoint().z(),0.0f);
+
+            if(randomGeneration == 0){
+
+              if(!isPointContainedInAnySpanningTreeRoom(point1)){
+                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
+                corridorPoints.push_back(point1);
+                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
+              }else if(!isPointContainedInAnySpanningTreeRoom(point2)){
+                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
+                corridorPoints.push_back(point2);
+                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
+              }
+
+            }else if(randomGeneration == 1){
+
+              if(!isPointContainedInAnySpanningTreeRoom(point2)){
+                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
+                corridorPoints.push_back(point2);
+                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
+              }else if(!isPointContainedInAnySpanningTreeRoom(point1)){
+                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
+                corridorPoints.push_back(point1);
+                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
+              }
+
+            }
+          }
+        }
+      }
+
+    }
+
+    bool isPointContainedInAnySpanningTreeRoom(vec4 point){
+      for(int k=0;k!=minimumTreeRooms.size();++k){
+
+        if(point.x() >= minimumTreeRooms[k]->getGroundPoint(0).x() && point.x() <= minimumTreeRooms[k]->getGroundPoint(3).x() &&
+          point.z() >= minimumTreeRooms[k]->getGroundPoint(0).z() && point.z() <= minimumTreeRooms[k]->getGroundPoint(1).z()){
+            return true;
+        }
+      }
+
+      return false;
+    }
+
+    void createCorridors(){
+      // TO DO
+    }
+
     void printRooms(){
       for(int i=0;i!=rooms.size();++i){
 
@@ -574,13 +649,15 @@ namespace octet{
         for(int j=0; j!=minimumTreeRooms.size();++j){
           if(i!=j){
             if(minimunSpanningTree.getValueAt(i,j) == 1.0f){
-              renderMinimunSpanningTree(modelToProjection, minimumTreeRooms[i]->getMidPoint(),minimumTreeRooms[j]->getMidPoint());
+              //renderLines(modelToProjection, minimumTreeRooms[i]->getMidPoint(),minimumTreeRooms[j]->getMidPoint(),vec4(0.0f,1.0f,0.0f,1.0f));
             }
           }
         }
       }
       
-      
+      for(int p=0; p!=corridorPoints.size()-1;++p){
+        renderLines(modelToProjection, corridorPoints[p], corridorPoints[p+1],vec4(0.0f,0.0f,1.0f,1.0f));
+      } 
 
       grid.set_mode(GL_LINE_STRIP);
       dungeon_shader_.render(modelToProjection,4);
@@ -635,9 +712,9 @@ namespace octet{
 
     }
 
-    void renderMinimunSpanningTree(mat4t modelToProjection, vec4 p1, vec4 p2){
+    void renderLines(mat4t modelToProjection, vec4 p1, vec4 p2, vec4 color){
 
-      color_shader_.render(modelToProjection,vec4(0.0f,1.0f,0.0f,1.0f));
+      color_shader_.render(modelToProjection,color);
 
       float vertices[] = {
         p1.x(), 0, p1.z(),
