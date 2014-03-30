@@ -38,7 +38,11 @@ namespace octet{
 
     bool showDelaunayTriangulation;
 
+    bool showCorridors;
+
     std::vector<vec4> corridorPoints;
+
+    std::vector<Room> corridors;
 
   public:
 
@@ -58,9 +62,9 @@ namespace octet{
       dungeon_shader_.init();
 
       textures[0] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/wall.gif");
-      textures[1] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/yellowWall.gif");
+      textures[1] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/blueWall.gif");
       textures[2] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/greenWall.gif");
-      textures[3] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/blueWall.gif");
+      textures[3] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/yellowWall.gif");
       textures[4] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/lightblueWall.gif");
       textures[5] = resources::get_texture_handle(GL_RGBA, "assets/dungeon_generator/redWall.gif");
 
@@ -68,10 +72,19 @@ namespace octet{
 
       showDelaunayTriangulation = false;
 
+      showCorridors = false;
+
       triangulator.init(ROOMS);
 
       createGrid();
 
+      dungeonAlgorithm();
+
+
+    }
+
+    void dungeonAlgorithm() 
+    {
       generateRooms();
 
       //printRooms();
@@ -101,12 +114,11 @@ namespace octet{
 
       generateRandomEdges();
 
-      minimunSpanningTree.printGraph();
+      //minimunSpanningTree.printGraph();
 
       generateLShapesForCorridors();
 
-      createCorridors();
-
+      generateFinalDungeon();
     }
 
     void createGrid(){
@@ -273,8 +285,12 @@ namespace octet{
       }
       
       if(maxX > maxZ){
+        cameraToWorld.loadIdentity();
+        cameraToWorld.rotateX(90.0);
         cameraToWorld.translate(0.0,0.0,maxX);
       }else{
+        cameraToWorld.loadIdentity();
+        cameraToWorld.rotateX(90.0);
         cameraToWorld.translate(0.0,0.0,maxZ);
       }
 
@@ -323,9 +339,6 @@ namespace octet{
           rooms[i].setTexture(5);
 
           triangulator.addPoint(rooms[i].getMidPoint().x(), rooms[i].getMidPoint().z());
-
-          roomsGraph.addRoom(&rooms[i]);
-          minimunSpanningTree.addRoom(&rooms[i]);
           minimumTreeRooms.push_back(&rooms[i]);
 
           cout<<"Add point: "<<rooms[i].getMidPoint().x()<<" "<<rooms[i].getMidPoint().z()<<" "<<endl;
@@ -335,8 +348,14 @@ namespace octet{
               
       triangulator.triangulate();
 
+      //Create graphs and add rooms
       roomsGraph.initialiseGraph(numRooms);
       minimunSpanningTree.initialiseGraph(numRooms);
+
+      for(int i=0; i!=minimumTreeRooms.size();++i){
+        roomsGraph.addRoom(minimumTreeRooms[i]);
+        minimunSpanningTree.addRoom(minimumTreeRooms[i]);
+      }
 
       int numTris = triangulator.getNumTriangles();
       ITRIANGLE *tris = triangulator.getTriangles();
@@ -452,54 +471,72 @@ namespace octet{
 
             int randomGeneration = rand() / (RAND_MAX/2);
 
-            vec4 point1(minimumTreeRooms[i]->getMidPoint().x(),0.0f,minimumTreeRooms[j]->getMidPoint().z(),0.0f);
-            vec4 point2(minimumTreeRooms[j]->getMidPoint().x(),0.0f,minimumTreeRooms[i]->getMidPoint().z(),0.0f);
-
+            //Determines if the corridor appears on the right or on the left of each pair of rooms
+            vec4 randomPoint;
+            
             if(randomGeneration == 0){
-
-              if(!isPointContainedInAnySpanningTreeRoom(point1)){
-                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
-                corridorPoints.push_back(point1);
-                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
-              }else if(!isPointContainedInAnySpanningTreeRoom(point2)){
-                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
-                corridorPoints.push_back(point2);
-                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
-              }
-
-            }else if(randomGeneration == 1){
-
-              if(!isPointContainedInAnySpanningTreeRoom(point2)){
-                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
-                corridorPoints.push_back(point2);
-                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
-              }else if(!isPointContainedInAnySpanningTreeRoom(point1)){
-                corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
-                corridorPoints.push_back(point1);
-                corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
-              }
-
+                randomPoint = vec4(minimumTreeRooms[i]->getMidPoint().x(),0.0f,minimumTreeRooms[j]->getMidPoint().z(),0.0f);
+                
+            }else {
+                randomPoint = vec4(minimumTreeRooms[j]->getMidPoint().x(),0.0f,minimumTreeRooms[i]->getMidPoint().z(),0.0f);
             }
+
+
+            //Points for the L-shape blue lines---> REMOVE AFTER DEBUGGING
+            corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
+            corridorPoints.push_back(randomPoint);
+            corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
+
+            createCorridors(minimumTreeRooms[i]->getMidPoint(),randomPoint);
+            createCorridors(randomPoint,minimumTreeRooms[j]->getMidPoint());
+
           }
         }
       }
 
     }
 
-    bool isPointContainedInAnySpanningTreeRoom(vec4 point){
-      for(int k=0;k!=minimumTreeRooms.size();++k){
+    void createCorridors(vec4 point1, vec4 point2){
 
-        if(point.x() >= minimumTreeRooms[k]->getGroundPoint(0).x() && point.x() <= minimumTreeRooms[k]->getGroundPoint(3).x() &&
-          point.z() >= minimumTreeRooms[k]->getGroundPoint(0).z() && point.z() <= minimumTreeRooms[k]->getGroundPoint(1).z()){
-            return true;
-        }
+      vec4 p1,p2,p3,p4;
+
+
+      //Corridor lies on the z-axis
+      if((point1.x() - point2.x()) == 0.0f){
+
+        p1=vec4(point1.x()-0.5f,point1.y(),point1.z(),point1.w());
+        p2=vec4(point2.x()-0.5f,point2.y(),point2.z(),point2.w());
+        p3=vec4(point2.x()+0.5f,point2.y(),point2.z(),point2.w());
+        p4=vec4(point1.x()+0.5f,point1.y(),point1.z(),point1.w());
+
+      //Corridor lies on the x-axis
+      }else if((point1.z() - point2.z()) == 0.0f){
+
+        p1=vec4(point1.x(),point1.y(),point1.z()-0.5f,point1.w());
+        p2=vec4(point1.x(),point1.y(),point1.z()+0.5f,point1.w());
+        p3=vec4(point2.x(),point2.y(),point2.z()+0.5f,point2.w());
+        p4=vec4(point2.x(),point2.y(),point2.z()-0.5f,point2.w());
+
       }
 
-      return false;
+      Room room(p1,p2,p3,p4);
+      corridors.push_back(room);
     }
 
-    void createCorridors(){
-      // TO DO
+    void generateFinalDungeon(){
+
+      for(int i=0;i!=rooms.size();++i){
+        rooms[i].setRendered(false);
+      }
+
+      //If a rooms overlaps with any corridor we render it to obtain the final dungeon
+      for(int i=0;i!=rooms.size();++i){
+        for(int j=0;j!=corridors.size();++j){
+          if(roomsOverlap(rooms[i],corridors[j])){
+            rooms[i].setRendered(true);
+          }
+        }
+      }
     }
 
     void printRooms(){
@@ -574,8 +611,24 @@ namespace octet{
        }
       }
 
-      if(is_key_down('R')){
-        
+      if(is_key_down('C')){
+        if(showCorridors){
+          showCorridors = false;
+        }else{
+          showCorridors = true;
+        }
+      }
+
+      if(is_key_down('G')){
+        rooms.clear();
+        minimumTreeRooms.clear();
+        roomsGraph;
+        minimunSpanningTree;
+        corridorPoints.clear();
+        corridors.clear();
+        triangulator.reset();
+
+        dungeonAlgorithm();
       }
     }
 
@@ -628,6 +681,7 @@ namespace octet{
 
       renderCoordinatesOrigin(modelToProjection);
 
+      //Delaunay triangulation
       if(showDelaunayTriangulation){
 
         int numTris = triangulator.getNumTriangles();
@@ -645,23 +699,35 @@ namespace octet{
         }
       }
 
+      //Minimun spanning tree
       for(int i=0; i!=minimumTreeRooms.size();++i){
         for(int j=0; j!=minimumTreeRooms.size();++j){
           if(i!=j){
             if(minimunSpanningTree.getValueAt(i,j) == 1.0f){
-              //renderLines(modelToProjection, minimumTreeRooms[i]->getMidPoint(),minimumTreeRooms[j]->getMidPoint(),vec4(0.0f,1.0f,0.0f,1.0f));
+              renderLines(modelToProjection, minimumTreeRooms[i]->getMidPoint(),minimumTreeRooms[j]->getMidPoint(),vec4(0.0f,1.0f,0.0f,1.0f));
             }
           }
         }
       }
       
-      for(int p=0; p!=corridorPoints.size()-1;++p){
-        renderLines(modelToProjection, corridorPoints[p], corridorPoints[p+1],vec4(0.0f,0.0f,1.0f,1.0f));
-      } 
+      //L-Shape blue corridors
+      for(int p=0; p!=corridorPoints.size();p+=3){
+        renderCorridors(modelToProjection, corridorPoints[p], corridorPoints[p+1],corridorPoints[p+2],vec4(0.0f,0.0f,1.0f,1.0f));
+      }
 
       grid.set_mode(GL_LINE_STRIP);
       dungeon_shader_.render(modelToProjection,4);
       grid.render();
+      
+     if(showCorridors){
+       for(int i=0;i!=corridors.size();++i){
+
+          dungeon_shader_.render(modelToProjection,static_cast<int>(corridors[i].getTexture()));
+          if(corridors[i].getRendered())
+            corridors[i].render();
+        }
+     }
+      
       
       for(int i=0;i!=rooms.size();++i){
 
@@ -669,6 +735,9 @@ namespace octet{
         if(rooms[i].getRendered())
           rooms[i].render();
       } 
+
+
+      
       
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -710,6 +779,21 @@ namespace octet{
 
       glDrawArrays(GL_LINE_LOOP, 0, 3);
 
+    }
+
+    void renderCorridors(mat4t modelToProjection, vec4 p1, vec4 p2, vec4 p3, vec4 color){
+      color_shader_.render(modelToProjection,color);
+
+      float vertices[] = {
+        p1.x(), 0, p1.z(),
+        p2.x(), 0, p2.z(),
+        p3.x(), 0, p3.z(),
+      };
+
+      glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)vertices );
+      glEnableVertexAttribArray(attribute_pos);
+
+      glDrawArrays(GL_LINE_STRIP, 0, 3);
     }
 
     void renderLines(mat4t modelToProjection, vec4 p1, vec4 p2, vec4 color){

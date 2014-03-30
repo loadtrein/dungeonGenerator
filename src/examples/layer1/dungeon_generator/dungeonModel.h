@@ -78,12 +78,33 @@ namespace octet{
 
       isRendered = true;
 
-      texture = rand() / (RAND_MAX/4);
+      texture = rand() / (RAND_MAX/3);
 
       generateMidPoint();
 
       meshRoom.make_plane(grounPoints[0],grounPoints[1],grounPoints[2],grounPoints[3]);
     } 
+
+    //Constructor just for the bounding rooms for the L-Shape Corridors
+    Room(vec4 p1, vec4 p2, vec4 p3, vec4 p4){
+      grounPoints[0] = p1;
+      grounPoints[1] = p2;
+      grounPoints[2] = p3;
+      grounPoints[3] = p4;
+
+      this->width = abs(p1.x()) - abs(p4.x());
+      this->length = abs(p1.z()) - abs(p4.z());
+
+      area = width * length;
+
+      isRendered = true;
+
+      texture = 3;
+
+      generateMidPoint();
+
+      meshRoom.make_plane(grounPoints[0],grounPoints[1],grounPoints[2],grounPoints[3]);
+    }
 
     vec4 getMidPoint(){
       return this->midPoint;
@@ -228,10 +249,12 @@ namespace octet{
      rooms.push_back(r);
    }
 
+
    void initialiseGraph(int numElements){
      
      this->numElements = numElements;
      this->values = std::vector<float>(numElements*numElements);
+     this->rooms.clear();
 
      for(int i=0;i!=numElements*numElements;++i){
        this->values[i] = 0.0f;
