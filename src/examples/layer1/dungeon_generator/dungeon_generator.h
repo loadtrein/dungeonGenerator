@@ -6,15 +6,17 @@ using namespace std;
 
 namespace octet{
 
-
+  /************************************************************************/
+  /* Class that contains the main procedures to generate random 2D dungeons                                                                     */
+  /************************************************************************/
   class dungeon_generator : public app {
 
     mat4t modelToWorld;
     mat4t cameraToWorld;
 
     enum {   
-      ROOMS = 50,
-      RADIUS = 10
+      ROOMS = 150,
+      RADIUS = 30
     };    
 
     mesh grid;
@@ -51,6 +53,10 @@ namespace octet{
 
     dungeon_generator(int argc, char **argv) : app(argc, argv){}
 
+
+    /************************************************************************/
+    /* Function that is called to initialise all the elements of the class                                                                     */
+    /************************************************************************/
     void app_init() {
 
       modelToWorld.loadIdentity();
@@ -92,6 +98,10 @@ namespace octet{
 
     }
 
+
+    /************************************************************************/
+    /* Algorithm that step by step procedurally generates the dungeon                                                                     */
+    /************************************************************************/
     void dungeonAlgorithm() 
     {
 
@@ -131,6 +141,10 @@ namespace octet{
       cout<<"...Generated"<<endl;
     }
 
+
+    /************************************************************************/
+    /* Creates a grid in the screen for debugging purposes                                                                     */
+    /************************************************************************/
     void createGrid(){
 
       mesh_builder b;
@@ -145,6 +159,10 @@ namespace octet{
       b.get_mesh(grid);
     }
 
+
+    /************************************************************************/
+    /* Function that generates rooms in random positions within a given radius. They follow a certain aspect ratio      */
+    /************************************************************************/
     void generateRooms(){
 
       std::default_random_engine generator;
@@ -182,6 +200,9 @@ namespace octet{
       }
     }
 
+    /************************************************************************/
+    /* Function that separates the rooms using separation behaviours               */
+    /************************************************************************/
     void separateTiles(){
 
        int numCloseRooms = 0;
@@ -234,6 +255,9 @@ namespace octet{
        }
     }
 
+    /************************************************************************/
+    /* Function that determines if there are any overlappings between rooms in the world    */
+    /************************************************************************/
     bool roomsOverlap(){
 
       for(int i=0;i!=rooms.size();++i){
@@ -254,6 +278,10 @@ namespace octet{
       return false;
     }
 
+
+    /************************************************************************/
+    /* Function that determines if two rooms overlap                    */
+    /************************************************************************/
     bool roomsOverlap(Room r1, Room r2){
       
       if( r1.getGroundPoint(0).x() < r2.getGroundPoint(2).x() &&
@@ -267,6 +295,10 @@ namespace octet{
       return false;
     }
 
+
+    /************************************************************************/
+    /* Function that fills with small tiles gaps between the rooms         */
+    /************************************************************************/
     void createSmallTiles() {
 
       //We calculate the boundaries of the dungeon map
@@ -309,6 +341,10 @@ namespace octet{
 
     }
 
+
+    /************************************************************************/
+    /* Function that fills with small tiles gaps between the rooms         */
+    /************************************************************************/
     void fillWithSmallTiles(float minX, float maxX, float minZ, float maxZ){
 
       for(int i=minX;i!=maxX;++i){
@@ -326,6 +362,10 @@ namespace octet{
 
     }
 
+
+    /************************************************************************/
+    /* Function that determines if a given point lies inside a room         */
+    /************************************************************************/
     bool isPointContainedInAnyRoom(float x, float z){
       for(int k=0;k!=rooms.size();++k){
 
@@ -338,6 +378,10 @@ namespace octet{
       return false;
     }
 
+
+    /************************************************************************/
+    /* Function that selects the biggest rooms and creates a completely connected graph */
+    /************************************************************************/
     void selectRoomsAndCreateCompleteGraph(){
       
       int numRooms=0;
@@ -387,6 +431,10 @@ namespace octet{
       //roomsGraph.printGraph();
     }
 
+
+    /************************************************************************/
+    /* Function that creates a minimum spanning tree from the main graph                                                                     */
+    /************************************************************************/
     void createMinimumSpanningTree(){
 
       //We add the first room
@@ -446,9 +494,13 @@ namespace octet{
       return index;
     }
 
+
+    /************************************************************************/
+    /* Function that adds ramdom edges from the main graph to the minimun spanning tree to create loops within the dungeon */
+    /************************************************************************/
     void generateRandomEdges(){
 
-      //Euler formula to get the edges
+      //Euler formula to get the number of edges
       int numberOfEdges = triangulator.getNumTriangles() + minimumTreeRooms.size() - 1;
 
       int numAdditionalEdges = (numberOfEdges * 15) / 100;
@@ -468,7 +520,12 @@ namespace octet{
       }
 
     }
+    
 
+
+    /************************************************************************/
+    /* Function that generates L-shaped corridors following the connections within the minimum spanning tree */
+    /************************************************************************/
     void generateLShapesForCorridors(){
 
       for(int i=0; i!=minimumTreeRooms.size();++i){
@@ -492,7 +549,7 @@ namespace octet{
             }
 
 
-            //Points for the L-shape blue lines---> JUST FOR DEBUGGING PURPOSES - REMOVE
+            //Points for the L-shape blue lines---> JUST FOR DEBUGGING PURPOSES
             corridorPoints.push_back(minimumTreeRooms[i]->getMidPoint());
             corridorPoints.push_back(randomPoint);
             corridorPoints.push_back(minimumTreeRooms[j]->getMidPoint());
@@ -506,6 +563,10 @@ namespace octet{
 
     }
 
+
+    /************************************************************************/
+    /* Function that generates L-shaped corridors following the connections within the minimum spanning tree */
+    /************************************************************************/
     void createCorridors(vec4 point1, vec4 point2){
 
       vec4 p1,p2,p3,p4;
@@ -545,13 +606,17 @@ namespace octet{
       corridors.push_back(room);
     }
 
+
+    /************************************************************************/
+    /* Function that renders the final dungeon                                                                     */
+    /************************************************************************/
     void generateFinalDungeon(){
 
       for(int i=0;i!=rooms.size();++i){
         rooms[i].setRendered(false);
       }
 
-      //If a room overlaps with any corridor we know it belongs to the dugeon, so we render it
+      //If a room overlaps with any corridor we know it belongs to the dungeon, so we render it to obtain the final dungeon
       for(int i=0;i!=rooms.size();++i){
         for(int j=0;j!=corridors.size();++j){
           if(roomsOverlap(rooms[i],corridors[j])){
@@ -561,6 +626,10 @@ namespace octet{
       }
     }
 
+
+    /************************************************************************/
+    /* Prints rooms info - Debugging purposes                               */
+    /************************************************************************/
     void printRooms(){
       for(int i=0;i!=rooms.size();++i){
 
@@ -578,6 +647,10 @@ namespace octet{
       }
     }
 
+
+    /************************************************************************/
+    /* Function that gets the keyboard events                              */
+    /************************************************************************/
     void keyboard(){
       if(is_key_down('D')){
         cameraToWorld.translate(-0.1f,0.0f,0.0f);
@@ -625,6 +698,8 @@ namespace octet{
         cameraToWorld.translate(0.0f,0.0f,5.0f);
       }
 
+
+      //Step by step execution
       if(is_key_down('I')){
 
         if(step ==1 ){
@@ -725,6 +800,10 @@ namespace octet{
       }
     }
 
+
+    /************************************************************************/
+    /* Game loop                                                                     */
+    /************************************************************************/
     void draw_world(int x, int y, int w, int h) {
 
       keyboard();
@@ -741,7 +820,6 @@ namespace octet{
       // allow Z buffer depth testing (closer objects are always drawn in front of far ones)
       glEnable(GL_DEPTH_TEST);
 
-      
 
       // allow alpha blend (transparency when alpha channel is 0)
       glEnable(GL_BLEND);
@@ -772,7 +850,6 @@ namespace octet{
       glBindTexture(GL_TEXTURE_2D, textures[5]);
 
 
-      
 
       //Delaunay triangulation
       if(showDelaunayTriangulation){
@@ -792,8 +869,8 @@ namespace octet{
         }
       }
 
+      //Minimun spanning tree
       if(showMinimumSpanningTree){
-        //Minimun spanning tree
         for(int i=0; i!=minimumTreeRooms.size();++i){
           for(int j=0; j!=minimumTreeRooms.size();++j){
             if(i!=j){
@@ -810,6 +887,7 @@ namespace octet{
       grid.set_mode(GL_LINE_STRIP);
       dungeon_shader_.render(modelToProjection,4);
       
+      //Shows the debugging grid
       if(showGrid){
         renderCoordinatesOrigin(modelToProjection);
         grid.render();
@@ -822,7 +900,7 @@ namespace octet{
          renderCorridors(modelToProjection, corridorPoints[p], corridorPoints[p+1],corridorPoints[p+2],vec4(0.0f,0.0f,1.0f,1.0f));
        }
 
-
+       //Yellow corridors
        for(int i=0;i!=corridors.size();++i){
           dungeon_shader_.render(modelToProjection,static_cast<int>(corridors[i].getTexture()));
           if(corridors[i].getRendered())
