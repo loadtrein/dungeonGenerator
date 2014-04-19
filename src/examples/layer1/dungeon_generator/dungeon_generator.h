@@ -15,8 +15,8 @@ namespace octet{
     mat4t cameraToWorld;
 
     enum {   
-      ROOMS = 150,
-      RADIUS = 30
+      ROOMS = 20,
+      RADIUS = 10
     };    
 
     mesh grid;
@@ -264,10 +264,10 @@ namespace octet{
         for(int j=0;j!=rooms.size();++j){
           if(i!=j){
             
-            if( rooms[i].getGroundPoint(0).x() < rooms[j].getGroundPoint(2).x() &&
-                rooms[i].getGroundPoint(2).x() > rooms[j].getGroundPoint(0).x() &&
-                rooms[i].getGroundPoint(0).z() < rooms[j].getGroundPoint(2).z() &&
-                rooms[i].getGroundPoint(2).z() > rooms[j].getGroundPoint(0).z()){
+            if( rooms[i].getFloorPoint(0).x() < rooms[j].getFloorPoint(2).x() &&
+                rooms[i].getFloorPoint(2).x() > rooms[j].getFloorPoint(0).x() &&
+                rooms[i].getFloorPoint(0).z() < rooms[j].getFloorPoint(2).z() &&
+                rooms[i].getFloorPoint(2).z() > rooms[j].getFloorPoint(0).z()){
 
                   return true;
             }
@@ -284,10 +284,10 @@ namespace octet{
     /************************************************************************/
     bool roomsOverlap(Room r1, Room r2){
       
-      if( r1.getGroundPoint(0).x() < r2.getGroundPoint(2).x() &&
-          r1.getGroundPoint(2).x() > r2.getGroundPoint(0).x() &&
-          r1.getGroundPoint(0).z() < r2.getGroundPoint(2).z() &&
-          r1.getGroundPoint(2).z() > r2.getGroundPoint(0).z()){
+      if( r1.getFloorPoint(0).x() < r2.getFloorPoint(2).x() &&
+          r1.getFloorPoint(2).x() > r2.getFloorPoint(0).x() &&
+          r1.getFloorPoint(0).z() < r2.getFloorPoint(2).z() &&
+          r1.getFloorPoint(2).z() > r2.getFloorPoint(0).z()){
 
           return true;
       }
@@ -307,20 +307,20 @@ namespace octet{
       for(int i=0;i!=rooms.size();++i){
         for(int j=0;j!=4;++j){
 
-          if(rooms[i].getGroundPoint(j).x() > maxX){
-            maxX = rooms[i].getGroundPoint(j).x();
+          if(rooms[i].getFloorPoint(j).x() > maxX){
+            maxX = rooms[i].getFloorPoint(j).x();
           }
 
-          if(rooms[i].getGroundPoint(j).x() < minX){
-            minX = rooms[i].getGroundPoint(j).x();
+          if(rooms[i].getFloorPoint(j).x() < minX){
+            minX = rooms[i].getFloorPoint(j).x();
           }
 
-          if(rooms[i].getGroundPoint(j).z() > maxZ){
-            maxZ = rooms[i].getGroundPoint(j).z();
+          if(rooms[i].getFloorPoint(j).z() > maxZ){
+            maxZ = rooms[i].getFloorPoint(j).z();
           }
 
-          if(rooms[i].getGroundPoint(j).z() < minZ){
-            minZ = rooms[i].getGroundPoint(j).z();
+          if(rooms[i].getFloorPoint(j).z() < minZ){
+            minZ = rooms[i].getFloorPoint(j).z();
           }
 
         }
@@ -369,8 +369,8 @@ namespace octet{
     bool isPointContainedInAnyRoom(float x, float z){
       for(int k=0;k!=rooms.size();++k){
 
-        if(x >= rooms[k].getGroundPoint(0).x() && x <= rooms[k].getGroundPoint(3).x() &&
-          z >= rooms[k].getGroundPoint(0).z() && z <= rooms[k].getGroundPoint(1).z()){
+        if(x >= rooms[k].getFloorPoint(0).x() && x <= rooms[k].getFloorPoint(3).x() &&
+          z >= rooms[k].getFloorPoint(0).z() && z <= rooms[k].getFloorPoint(1).z()){
           return true;
         }
       }
@@ -581,10 +581,10 @@ namespace octet{
           point2 = temp;
         }
 
-        p1=vec4(point1.x()-0.5f,point1.y(),point1.z()-0.5f,point1.w());
-        p2=vec4(point2.x()-0.5f,point2.y(),point2.z()+0.5f,point2.w());
-        p3=vec4(point2.x()+0.5f,point2.y(),point2.z()+0.5f,point2.w());
-        p4=vec4(point1.x()+0.5f,point1.y(),point1.z()-0.5f,point1.w());
+        p1=vec4(point1.x()-0.4f,point1.y(),point1.z()-0.4f,point1.w());
+        p2=vec4(point2.x()-0.4f,point2.y(),point2.z()+0.4f,point2.w());
+        p3=vec4(point2.x()+0.4f,point2.y(),point2.z()+0.4f,point2.w());
+        p4=vec4(point1.x()+0.4f,point1.y(),point1.z()-0.4f,point1.w());
 
       //Corridor lies on the x-axis
       }else if((point1.z() - point2.z()) == 0.0f){
@@ -595,10 +595,10 @@ namespace octet{
           point2 = temp;
         }
 
-        p1=vec4(point1.x()-0.5f,point1.y(),point1.z()-0.5f,point1.w());
-        p2=vec4(point1.x()-0.5f,point1.y(),point1.z()+0.5f,point1.w());
-        p3=vec4(point2.x()+0.5f,point2.y(),point2.z()+0.5f,point2.w());
-        p4=vec4(point2.x()+0.5f,point2.y(),point2.z()-0.5f,point2.w());
+        p1=vec4(point1.x()-0.4f,point1.y(),point1.z()-0.4f,point1.w());
+        p2=vec4(point1.x()-0.4f,point1.y(),point1.z()+0.4f,point1.w());
+        p3=vec4(point2.x()+0.4f,point2.y(),point2.z()+0.4f,point2.w());
+        p4=vec4(point2.x()+0.4f,point2.y(),point2.z()-0.4f,point2.w());
 
       }
 
@@ -642,7 +642,7 @@ namespace octet{
         }
 
 
-        cout<<i+1<<". x: "<<rooms[i].getGroundPoint(0).x()<<" z:"<<rooms[i].getGroundPoint(0).z()<<endl;
+        cout<<i+1<<". x: "<<rooms[i].getFloorPoint(0).x()<<" z:"<<rooms[i].getFloorPoint(0).z()<<endl;
         cout<<"width: "<<rooms[i].getWidth()<<" length: "<<rooms[i].getLength()<<" ratio: "<<ratio<<" area: "<<rooms[i].getArea()<<endl<<endl;
       }
     }

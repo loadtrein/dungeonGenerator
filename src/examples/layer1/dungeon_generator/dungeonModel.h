@@ -2,15 +2,25 @@ namespace octet{
 
   class Wall{
 
-  public:
+  private:
 
     vec4 wallPoints[4];
+
+    mesh wallMesh;
+
+    bool isRendered;
+
+  public:
 
     Wall(vec4 p1, vec4 p2, vec4 p3, vec4 p4){
       wallPoints[0]=p1;
       wallPoints[1]=p2;
       wallPoints[2]=p3;
       wallPoints[3]=p4;
+
+      this->isRendered = true;
+
+      wallMesh.make_plane(p1,p2,p3,p4);
     }
 
     Wall(const Wall & rhs){
@@ -18,14 +28,33 @@ namespace octet{
       wallPoints[1]=rhs.wallPoints[1];
       wallPoints[2]=rhs.wallPoints[2];
       wallPoints[3]=rhs.wallPoints[3];
+
+      wallMesh = rhs.wallMesh;
+
+      isRendered = rhs.isRendered;
     }
 
+    bool getRendered(){
+      return this->isRendered;
+    }
+
+    void setRendered(bool value){
+      this->isRendered = value;
+    }
+
+    vec4 getWallPoint(int index){
+      return this->wallPoints[index];
+    }
+
+    void render(){
+      wallMesh.render();
+    }
 
   };
 
   class Room{
 
-    vec4 grounPoints[4];
+    std::vector<Wall> walls;
 
     vec4 midPoint;
 
@@ -35,20 +64,32 @@ namespace octet{
 
     int texture;
 
-    bool isRendered;
+    
+    //It calculates the midpoint from the bottom left point of the floor wall
+    void generateMidPoint(vec4 p1){
+      midPoint = vec4(p1.x()+width/2,p1.y(),p1.z()+length/2,p1.w());
+    }
 
-    mesh meshRoom;
+    void createWalls(){
 
-    void generateMidPoint(){
+      Wall floor = walls[0];
 
-      midPoint = vec4(grounPoints[0].x()+width/2,grounPoints[0].y(),
-        grounPoints[0].z()+length/2,grounPoints[0].w());
+      for(int i=0; i!=4;++i){
+
+        Wall wall(vec4(floor.getWallPoint(i).x(),floor.getWallPoint(i).y(),floor.getWallPoint(i).z(),floor.getWallPoint(i).w()),
+          vec4(floor.getWallPoint(i).x(),floor.getWallPoint(i).y() - 2.0f,floor.getWallPoint(i).z(),floor.getWallPoint(i).w()),
+          vec4(floor.getWallPoint((i==3)? 0 : i+1).x(),floor.getWallPoint((i==3)? 0 : i+1).y() - 2.0f,floor.getWallPoint((i==3)? 0 : i+1).z(),floor.getWallPoint((i==3)? 0 : i+1).w()),
+          vec4(floor.getWallPoint((i==3)? 0 : i+1).x(),floor.getWallPoint((i==3)? 0 : i+1).y(),floor.getWallPoint((i==3)? 0 : i+1).z(),floor.getWallPoint((i==3)? 0 : i+1).w()));
+
+        walls.push_back(wall);
+      
+      }
+
     }
 
   public:
 
-    Room(const Room & rhs){
-      meshRoom = rhs.meshRoom;
+    /*Room(const Room & rhs){
 
       grounPoints[0]=rhs.grounPoints[0];
       grounPoints[1]=rhs.grounPoints[1];
@@ -60,58 +101,55 @@ namespace octet{
       area =  rhs.area;
       midPoint = rhs.midPoint;
       texture = rhs.texture;
-      isRendered = rhs.isRendered;
 
-    }
+    }*/
 
     Room(vec4 p1, float width, float length){
 
-      grounPoints[0] = p1;
-      grounPoints[1] = vec4(p1.x(),p1.y(),p1.z()+length,p1.w());
-      grounPoints[2] = vec4(p1.x()+width,p1.y(),p1.z()+length,p1.w());
-      grounPoints[3] = vec4(p1.x()+width,p1.y(),p1.z(),p1.w());
+      //We create the floor of the room
+      Wall roomFloor(p1, vec4(p1.x(),p1.y(),p1.z()+length,p1.w()), vec4(p1.x()+width,p1.y(),p1.z()+length,p1.w()),vec4(p1.x()+width,p1.y(),p1.z(),p1.w()));
+      walls.push_back(roomFloor);
 
       this->width = width;
       this->length = length;
 
       area = width * length;
 
-      isRendered = true;
-
       texture = rand() / (RAND_MAX/3);
 
-      generateMidPoint();
+      generateMidPoint(p1);
 
-      meshRoom.make_plane(grounPoints[0],grounPoints[1],grounPoints[2],grounPoints[3]);
+      //We create the walls of the room
+      createWalls();
+
     } 
 
     //Constructor just for the bounding rooms for the L-Shape Corridors
     Room(vec4 p1, vec4 p2, vec4 p3, vec4 p4){
-      grounPoints[0] = p1;
-      grounPoints[1] = p2;
-      grounPoints[2] = p3;
-      grounPoints[3] = p4;
+
+      //We create the floor of the room
+      Wall roomFloor(p1, p2, p3, p4);
+      walls.push_back(roomFloor);
 
       this->width = abs(p1.x()) - abs(p4.x());
       this->length = abs(p1.z()) - abs(p4.z());
 
       area = width * length;
 
-      isRendered = true;
-
       texture = 3;
 
-      generateMidPoint();
+      generateMidPoint(p1);
 
-      meshRoom.make_plane(grounPoints[0],grounPoints[1],grounPoints[2],grounPoints[3]);
+      //WE NEED TO DETERMINE IF WE CREATE THE WALLS FOR THE CORRIDORS IN ORDER TO DETECT THE INTERSECTIONS ----- TO DOOOOOO!!!!
+
     }
 
     vec4 getMidPoint(){
       return this->midPoint;
     }
 
-    vec4 getGroundPoint(int index){
-      return this->grounPoints[index];
+    vec4 getFloorPoint(int index){
+      return this->walls[0].getWallPoint(index);
     }
 
     float getWidth(){
@@ -134,12 +172,14 @@ namespace octet{
       this->texture = t;
     }
 
+    //TO DO
     bool getRendered(){
-      return this->isRendered;
+      return this->walls[0].getRendered();
     }
 
-    void setRendered(bool value){
-      this->isRendered = value;
+    //TO DO
+    void setRendered(bool v){
+     this->walls[0].setRendered(v);
     }
 
     void separate(vec4 separationVector){
@@ -157,21 +197,30 @@ namespace octet{
       int xMovement = static_cast<int>(xMovFloat);
       int zMovement = static_cast<int>(zMovFloat);
 
-      meshRoom.init();
 
-      grounPoints[0] = vec4(grounPoints[0].x()+xMovement,grounPoints[0].y(),grounPoints[0].z()+zMovement,grounPoints[0].w());
-      grounPoints[1] = vec4(grounPoints[1].x()+xMovement,grounPoints[1].y(),grounPoints[1].z()+zMovement,grounPoints[1].w());
-      grounPoints[2] = vec4(grounPoints[2].x()+xMovement,grounPoints[2].y(),grounPoints[2].z()+zMovement,grounPoints[2].w());
-      grounPoints[3] = vec4(grounPoints[3].x()+xMovement,grounPoints[3].y(),grounPoints[3].z()+zMovement,grounPoints[3].w());
+      //We store the new values for the floor
+      vec4 p1 (walls[0].getWallPoint(0).x()+xMovement,walls[0].getWallPoint(0).y(),walls[0].getWallPoint(0).z()+zMovement,walls[0].getWallPoint(0).w());
+      vec4 p2 (walls[0].getWallPoint(1).x()+xMovement,walls[0].getWallPoint(1).y(),walls[0].getWallPoint(1).z()+zMovement,walls[0].getWallPoint(1).w());
+      vec4 p3 (walls[0].getWallPoint(2).x()+xMovement,walls[0].getWallPoint(2).y(),walls[0].getWallPoint(2).z()+zMovement,walls[0].getWallPoint(2).w());
+      vec4 p4 (walls[0].getWallPoint(3).x()+xMovement,walls[0].getWallPoint(3).y(),walls[0].getWallPoint(3).z()+zMovement,walls[0].getWallPoint(3).w());
 
-      generateMidPoint();
+      //We delete the old walls
+      walls.clear();
 
-      meshRoom.make_plane(grounPoints[0],grounPoints[1],grounPoints[2],grounPoints[3]);
+      //We store the new ones
+      Wall roomFloor(p1, p2, p3,p4);
+      walls.push_back(roomFloor);
+
+      generateMidPoint(p1);
+
+      createWalls();
 
     }
 
     void render(){
-      meshRoom.render();
+      for(int i=0; i!=walls.size();++i){
+        walls[i].render();
+      }
     }
 
   };
